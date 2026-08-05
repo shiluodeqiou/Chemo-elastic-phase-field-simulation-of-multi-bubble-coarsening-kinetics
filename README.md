@@ -1,2 +1,1 @@
-# Chemo-elastic-phase-field-simulation-of-multi-bubble-coarsening-kinetics
-MATLAB code and data for chemo-elastic phase-field simulation of multi-bubble coarsening kinetics in Fe
+This repository contains the MATLAB source code and supporting functions used in the study “Chemo-elastic phase-field simulation of multi-bubble coarsening kinetics.” The supporting CSV data files are uploaded separately in the submission portal’s Research Data section. The repository is intended to support reproducibility of the computational workflow and figure generation.
