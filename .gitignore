@@ -1,0 +1,18 @@
+# ---- reproduction artefacts (large, regenerable) ----
+repro/results/*.mat
+repro/results/snapshots/
+repro/log_*.txt
+*.asv
+
+# ---- upstream figure/data files that are already in Chemo_Elastic_Simulation_Data ----
+# (kept: they are the published data set)
+
+# ---- scraped article artefacts (local only) ----
+_paper_clean.txt
+_paper_model.txt
+_paper_text.txt
+_paper_cn.txt
+*.html
+!repro/report.html
+Chemo_Elastic_Simulation_Data/
+*.bat

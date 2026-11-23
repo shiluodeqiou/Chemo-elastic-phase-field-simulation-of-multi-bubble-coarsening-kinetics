@@ -42,7 +42,7 @@ if use_gpu
         fprintf('GPU enabled: %s | ComputeCapability: %s\n\n', g.Name, g.ComputeCapability);
         gpu_ok = true;
     catch ME
-        warning('GPU not available. Falling back to CPU. (%s)', ME.message);
+        warning(ME.identifier,'GPU not available. Falling back to CPU. (%s)',ME.message);
         gpu_ok = false;
     end
 else
@@ -934,4 +934,3 @@ end
     end
 end
     end
-end
