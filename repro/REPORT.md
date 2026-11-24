@@ -78,8 +78,9 @@ edit in the working tree is a warning identifier in the GPU-fallback branch
 `Code.m` ships `phi0_global = 0.10` with 300 Gaussian seeds (radius 2.5, noise
 0.005). **Run as shipped, the simulation produces no bubbles at all.** The double
 well f = Aη²(1−η)² has f″(η) = 2A(1−6η+6η²) > 0 for η < 0.211, so a mean
-composition of 0.10 is metastable and the seeds dissolve within ~300 time units
-(verified: N → 0 while max η decays from 0.97 to 0.32). The released
+composition of 0.10 is metastable: at 800 K the population reaches zero by
+t ≈ 7.5 (500 steps), max η decays from 0.97 to 0.37 by t = 20, and the field
+homogenises at η = 0.10 (same at 1000 K, `check_phi010.m`). The released
 configuration is therefore not the one behind the published figures.
 
 The published initial state is nevertheless pinned down by three independent
