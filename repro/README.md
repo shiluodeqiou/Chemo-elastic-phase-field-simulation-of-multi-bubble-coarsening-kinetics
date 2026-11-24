@@ -17,7 +17,13 @@ startup_ChemoElastic            % set the MATLAB path
 cd repro
 run_all                         % 9 cases: 3 temperatures x 3 stress levels  (~2.6 h on an RTX 2060)
 analyze                         % metrics + comparison with the published values
-make_figures                    % regenerate figures 1-5, 9, 11, 12
+make_figures                    % regenerate figures 1-5, 9, 11-13
+make_fig_sensitivity            % figure 14 (needs the extra phi0 = 0.45 run below)
+```
+
+```matlab
+% optional: the phi0 = 0.45 sensitivity case (~21 min)
+repro_run_case(800, 0, struct('phi0', 0.45, 'tag', 'sens'));
 ```
 
 Before the first run, extract the reference values from the article's data set:
@@ -34,10 +40,14 @@ python repro/export_reference.py       # Chemo_Elastic_Simulation_Data/*.xlsx ->
 | `repro_run_case.m` | one `(T, σ)` realisation; line-by-line reproduction of the `Code.m` time loop |
 | `run_all.m` | the nine distinct `(T, σ)` pairs of the campaign (resumable) |
 | `analyze.m` | coarsening metrics (`N_f`, `r_eff`, `K_late`, stage-3 exponent) and the comparison with Table 1 |
-| `make_figures.m` | figures 1–5, 9, 11, 12 of the article |
+| `make_figures.m` | figures 1–5, 9, 11–13 of the article |
+| `make_fig_sensitivity.m` | figure 14: sensitivity to the initial composition |
 | `export_reference.py` | digitised figure data → tidy CSV |
-| `probe_all_figs.m` | recovers the phase fields stored inside the article's `.fig` files and re-measures them |
-| `calib_*.m` | initial-condition calibration experiments (see `REPORT.md`) |
+| `probe_all_figs.m` | recovers the phase fields stored inside the article's `.fig` files and re-measures them (validates the metric to 0.15 %) |
+| `calib_phi2.m` | initial-condition calibration: t = 0 metrics as a function of φ₀ |
+| `check_phi010.m` | what the shipped `phi0 = 0.10` does to the seeds |
+| `bench_*.m` | GPU/CPU step timing and GPU-sharing measurements |
+| `make_report_html.py` | renders `REPORT.md` into a single-file `report.html` |
 
 ## Numerical set-up (identical to `Code.m`)
 
@@ -61,8 +71,10 @@ repro/
 ├── results/            case_<T>_<S>.mat   (metrics + snapshot list)   [not tracked]
 ├── results/snapshots/  eta_istep*.mat     (microstructure fields)     [not tracked]
 ├── figures/            *.png  (200 dpi)
+├── figures/data/       *.csv  (numbers behind the figures)
 ├── reference/          *.csv  (digitised published data)
-└── REPORT.md           reproduction report
+├── REPORT.md           reproduction report
+└── report.html         the same report as a single self-contained page
 ```
 
 Field snapshots and case files are large and are excluded from git via
