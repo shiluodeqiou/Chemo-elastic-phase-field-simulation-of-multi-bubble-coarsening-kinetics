@@ -1,42 +1,35 @@
-This repository contains the MATLAB source code and supporting functions used in the study “Chemo-elastic phase-field simulation of multi-bubble coarsening kinetics.” The supporting CSV data files are uploaded separately in the submission portal’s Research Data section. The repository is intended to support reproducibility of the computational workflow and figure generation.
+多气泡粗化动力学的化学-弹性相场模拟
+======
+
+本仓库包含论文《Chemo-elastic phase-field simulation of multi-bubble coarsening kinetics》所用的 MATLAB 源码与支撑函数。配套的 CSV 数据文件在投稿系统的 Research Data 部分单独上传。仓库用于支持计算流程的复现与出图。
 
 ---
 
-## Reproduction
+## 复现
 
-`repro/` contains an independent reproduction harness for the article: it drives the
-sources above unmodified, runs the nine distinct (temperature, residual-stress)
-realisations of the campaign, recomputes every metric with the original
-measurement function, and compares the results with the digitised published data.
+`repro/` 是一套独立的复现框架：在不改动上游源码的前提下驱动计算，跑完 9 个（温度 × 残余应力）算例，用原作者的测量函数重新计算全部指标，并与论文中数字化提取的数据逐项对比。
 
-* **[`repro/REPORT.md`](repro/REPORT.md)** — reproduction report: verdict,
-  quantitative comparison with Table 1 / Figs. 2–12, and the discrepancies found
-  between the released code, the published figures and the manuscript.
-* **[`repro/report.html`](repro/report.html)** — the same report as a single
-  self-contained page (figures embedded).
-* **[`repro/README.md`](repro/README.md)** — how to run it.
+* **[`repro/REPORT.md`](repro/REPORT.md)** —— 复现报告：结论、与 Table 1 / 图 2–12 的定量对比，以及代码、图与正文之间不一致之处的说明。
+* **[`repro/report.html`](repro/report.html)** —— 同一份报告的单文件版本（图片内嵌，浏览器直接打开）。
+* **[`repro/README.md`](repro/README.md)** —— 运行方法与文件清单。
 
-Headline numbers from the reproduction (see the report for the full tables):
+主要结果（完整表格见报告）：
 
-| quantity | result |
+| 项目 | 结果 |
 | --- | --- |
-| stress mobility factor exp[−P V_act/(k_B T)] (Fig. 9) | reproduced exactly, 6/6 values to 5 decimals |
-| stress ranking compressive > none > tensile | reproduced at all three temperatures |
-| late-stage Δr³ ∝ t, stage-3 exponent | reproduced, n = 0.32 ± 0.02 (LSW 1/3) |
-| Table 1 final radius | +7.6 % ± 1.2 % |
-| Table 1 final bubble count | −21 % (systematic, traced to the initial composition chosen for the reproduction) |
+| 应力相关迁移率因子 exp[−P·V_act/(k_B T)]（图 9） | 精确复现，6 个数全部对到 5 位小数 |
+| 压应力 > 无应力 > 拉应力 的排序 | 三个温度全部成立 |
+| 后期 Δr³ ∝ t、第三阶段指数 | 复现，n = 0.32 ± 0.02（LSW 理论值 1/3） |
+| Table 1 最终半径 | +7.6 % ± 1.2 % |
+| Table 1 最终气泡数 | −21 %（系统性偏差，源于复现所选的初始成分） |
+| 质量守恒 | 漂移 ≤ 2.3 × 10⁻⁶ |
 
 ```matlab
 startup_ChemoElastic
 cd repro
-run_all            % 9 cases, ~170 min on an RTX 2060
-analyze            % comparison with the published values
-make_figures       % figures 1-5, 9, 11-13
+run_all            % 9 个算例，RTX 2060 上约 170 分钟
+analyze            % 与论文数值逐项对比
+make_figures       % 复现图 1-5、9、11-13
 ```
 
-> **Note on the initial condition.** `Code.m` ships `phi0_global = 0.10`, which is
-> metastable for this double well: with it the seeds do not survive past t ≈ 8 and
-> the published t = 0 state (r_eff = 5.9494, P/A = 0.33617) is not recovered. The
-> campaign here uses φ₀ = 0.50, calibrated against those published values; the
-> derivation is in `repro/REPORT.md` §3. If you reuse this code, set the composition
-> explicitly.
+> **关于初始条件。** `Code.m` 中 `phi0_global = 0.10`，该成分在此双势阱下处于亚稳区：种子在 t ≈ 8 之前即不再存活，无法复现论文 t = 0 的状态（r_eff = 5.9494、P/A = 0.33617）。本复现取 φ₀ = 0.50，按上述已发表数值标定，推导见 `repro/REPORT.md` 第 3 节。若复用此代码，请显式设定成分。

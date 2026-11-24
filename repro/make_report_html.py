@@ -13,6 +13,28 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "repro", "REPORT.md")
 DST = os.path.join(ROOT, "repro", "report.html")
 
+
+
+CJK = re.compile(r"[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]")
+
+
+def join_lines(buf):
+    """Join wrapped source lines; insert a space only between non-CJK script."""
+    out = ""
+    for k, line in enumerate(buf):
+        if k == 0:
+            out = line
+            continue
+        prev, nxt = out[-1:], line[:1]
+        if CJK.match(prev) and CJK.match(nxt):
+            out += line
+        elif prev == " ":
+            out += line
+        else:
+            out += " " + line
+    return out
+
+
 TEMPLATE = """<!DOCTYPE html>
 <html lang="zh"><head><meta charset="utf-8">
 <title>{title}</title>
@@ -110,7 +132,7 @@ def convert(md: str) -> str:
             while i < len(lines) and re.match(r"^>\s?", lines[i]):
                 buf.append(re.match(r"^>\s?(.*)$", lines[i]).group(1))
                 i += 1
-            out.append("<blockquote>" + inline(" ".join(buf)) + "</blockquote>")
+            out.append("<blockquote>" + inline(join_lines(buf)) + "</blockquote>")
             continue
         if ln.strip().startswith("|") and i + 1 < len(lines) and \
                 re.match(r"^\s*\|[\s:\-|]+\|\s*$", lines[i + 1]):
@@ -147,7 +169,7 @@ def convert(md: str) -> str:
                 r"^(#{1,4}\s|\||>|```|\s*[-*]\s|\s*\d+\.\s|---)", lines[i]):
             buf.append(lines[i].strip())
             i += 1
-        out.append("<p>" + inline(" ".join(buf)) + "</p>")
+        out.append("<p>" + inline(join_lines(buf)) + "</p>")
     return title, "\n".join(out)
 
 

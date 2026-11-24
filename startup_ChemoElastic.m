@@ -1,13 +1,21 @@
-% 启动 Chemo-elastic 多泡粗化 MATLAB 项目。
-% 本脚本只配置当前 MATLAB 会话的工作目录和搜索路径，不修改上游源码。
+% Startup for the chemo-elastic multi-bubble coarsening project.
+% Configures the working directory and the search path of the current MATLAB
+% session only; the upstream sources are not modified.
+%
+% NOTE: this file is deliberately ASCII-only. MATLAB picks up the system
+% default character set (GBK on zh-CN Windows), so non-ASCII text in a .m file
+% is decoded incorrectly and prints as mojibake. Keep all MATLAB sources ASCII;
+% the Chinese documentation lives in README.md and repro/REPORT.md.
 
 projectRoot = fileparts(mfilename('fullpath'));
 cd(projectRoot);
 addpath(projectRoot);
+addpath(fullfile(projectRoot,'repro'));
 
-fprintf('Chemo-elastic 多泡粗化项目\n');
-fprintf('项目目录: %s\n', projectRoot);
-fprintf('MATLAB: %s\n', version);
+fprintf('Chemo-elastic multi-bubble coarsening project\n');
+fprintf('  project root : %s\n', projectRoot);
+fprintf('  MATLAB       : %s\n', version);
+fprintf('  charset      : %s\n', feature('DefaultCharacterSet'));
 
 requiredFiles = {
     'Code.m'
@@ -22,19 +30,19 @@ requiredFiles = {
 
 missingFiles = requiredFiles(~cellfun(@(name) isfile(fullfile(projectRoot, name)), requiredFiles));
 if isempty(missingFiles)
-    fprintf('基础源码文件检查: 通过\n');
+    fprintf('  core sources : OK\n');
 else
     warning('ChemoElastic:MissingFiles', ...
-        '缺少基础源码文件: %s', strjoin(missingFiles, ', '));
+        'Missing core sources: %s', strjoin(missingFiles, ', '));
 end
 
-% 检查 Code.m 所需的辅助函数。
+% Helpers called by Code.m; they were absent from the original upload.
 optionalHelpers = {'save_stress_maps.m', 'make_default_disl.m', 'make_disl_dipole_stress.m'};
 missingHelpers = optionalHelpers(~cellfun(@(name) isfile(fullfile(projectRoot, name)), optionalHelpers));
 if isempty(missingHelpers)
-    fprintf('Code.m 辅助函数检查: 通过\n');
+    fprintf('  Code.m helpers: OK\n');
 else
-    fprintf('Code.m 缺少辅助函数: %s\n', strjoin(missingHelpers, ', '));
+    fprintf('  Code.m helpers missing: %s\n', strjoin(missingHelpers, ', '));
 end
 
-fprintf('可运行入口: Code.m\n');
+fprintf('  entry point  : Code.m (full campaign) or repro/run_all.m (reproduction)\n');
