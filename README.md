@@ -24,7 +24,7 @@ Headline numbers from the reproduction (see the report for the full tables):
 | stress ranking compressive > none > tensile | reproduced at all three temperatures |
 | late-stage Δr³ ∝ t, stage-3 exponent | reproduced, n = 0.32 ± 0.02 (LSW 1/3) |
 | Table 1 final radius | +7.6 % ± 1.2 % |
-| Table 1 final bubble count | −21 % (systematic, traced to the undocumented initial composition) |
+| Table 1 final bubble count | −21 % (systematic, traced to the initial composition chosen for the reproduction) |
 
 ```matlab
 startup_ChemoElastic
@@ -35,7 +35,8 @@ make_figures       % figures 1-5, 9, 11-13
 ```
 
 > **Note on the initial condition.** `Code.m` ships `phi0_global = 0.10`, which is
-> metastable for this double well — the bubbles dissolve and no coarsening occurs.
-> The production runs behind the published figures used a mean composition of
-> ≈ 0.45–0.50 (`repro/repro_params.m` explains the calibration). If you reuse this
-> code, set the composition explicitly.
+> metastable for this double well: with it the seeds do not survive past t ≈ 8 and
+> the published t = 0 state (r_eff = 5.9494, P/A = 0.33617) is not recovered. The
+> campaign here uses φ₀ = 0.50, calibrated against those published values; the
+> derivation is in `repro/REPORT.md` §3. If you reuse this code, set the composition
+> explicitly.
