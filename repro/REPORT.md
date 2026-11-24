@@ -26,11 +26,12 @@ t_end = 1800. 17–21 min per realisation, 170 min for the campaign.
 | stage-3 exponent n | 0.32 ± 0.02 vs 1/3 |
 | mass conservation | drift ≤ 2.3 × 10⁻⁶ |
 | Table 1 numbers | r_eff +7.6 % ± 1.2 %, N_f −21 % (systematic), ln K_late +0.28 |
-| published initial state | **cannot** be reproduced together with the published dynamics (§3, §5) |
+| published initial state | the published t = 0 state and the published dynamics cannot be matched by the same initial composition (§3, §5) |
 
 The reproduction is qualitatively complete and quantitatively good on every
-*specific* model ingredient. The remaining offsets all trace back to one
-undocumented quantity — the initial phase fraction (§3) — not to the physics.
+*specific* model ingredient. The remaining offsets all trace back to a single
+quantity — the initial phase fraction, which the released script does not reflect
+(§3) — rather than to the physics.
 
 ---
 
@@ -81,7 +82,8 @@ well f = Aη²(1−η)² has f″(η) = 2A(1−6η+6η²) > 0 for η < 0.211, so
 composition of 0.10 is metastable: at 800 K the population reaches zero by
 t ≈ 7.5 (500 steps), max η decays from 0.97 to 0.37 by t = 20, and the field
 homogenises at η = 0.10 (same at 1000 K, `check_phi010.m`). The released
-configuration is therefore not the one behind the published figures.
+configuration therefore does not by itself reproduce the published figures; the
+production runs must have used a different composition.
 
 The published initial state is nevertheless pinned down by three independent
 numbers in the article (Fig. 2b and Fig. 3a at t = 0): N₀ = 300,
@@ -102,7 +104,7 @@ other value comes close. Two independent observations agree:
 * the phase fields stored inside the published `.fig` files have mean
   η = 0.444–0.451 at late times — a conserved composition of ≈ 0.45–0.50, never 0.10.
 
-**The campaign therefore uses φ₀ = 0.50** (`repro_params.m`). This single change
+**The campaign therefore uses φ₀ = 0.50** (`repro_params.m`). This single choice
 is also the origin of the residual offsets discussed in §5.
 
 > **Pipeline cross-check.** The η fields are stored inside the article's `.fig`
@@ -183,6 +185,19 @@ exp[−P V_act/(k_B T)] with the published V_act = 0.0037 nm³.
 
 ![Stress comparison](figures/Fig13_stress_comparison.png)
 
+![LSW consistency](figures/Fig12_N_vs_rinv2.png)
+
+### 4.6 Vacancy and gas fields (Fig. 5)
+
+![Vacancy and gas fields](figures/Fig05_vacancy_gas.png)
+
+These are reproduced for completeness, but they are not independent transport
+solutions: in `Code.m` the two fields are algebraic tags of the order parameter
+(cv = 0.02 + 0.10 η, cg = 0.01 + 0.08 η), clipped to their physical ranges. Their
+time dependence therefore follows η(t) exactly, and the panels carry no
+information beyond Figs. 2–3. Any quantitative use of Fig. 5 would require
+solving the vacancy and gas diffusion equations explicitly.
+
 ---
 
 ## 5. Where the residual gap comes from
@@ -205,38 +220,44 @@ and N(t) tracks Fig. 2a almost exactly for t > 300, but the *initial* radius is
 then 12 % too small. **No single value of φ₀ reproduces both the published t = 0
 state and the published dynamics to better than ~10 %.**
 
-This is a property of the published data, not of the implementation: the t = 0
-microstructure panels of Figs. 1, 6 and 8 have mean η = 0.1069, whereas the
-evolved panels of the same figures have mean η = 0.4437–0.4510. A conserved
-Cahn–Hilliard field cannot do that. The initial panels were evidently produced
-with the `phi0 = 0.10` nucleation set-up that ships in `Code.m`, while the
-production runs — and every panel from (d) onwards — used a mean composition of
-≈ 0.45–0.50.
+This is a property of the published figure set rather than of the
+implementation: the t = 0 microstructure panels of Figs. 1, 6 and 8 have mean
+η = 0.1069, whereas the evolved panels of the same figures have mean
+η = 0.4437–0.4510. A conserved Cahn–Hilliard field cannot do both, so the initial
+panel and the kinetic series appear to come from two different set-ups — most
+likely the `phi0 = 0.10` nucleation configuration that ships in `Code.m` for the
+former, and a mean composition of ≈ 0.45–0.50 for the latter.
 
-**Recommendation for anyone reusing this code:** set φ₀ explicitly, state it in
-the paper, and do not use the shipped `phi0_global = 0.10`.
+For a reproduction one therefore has to choose which published quantity to match,
+and the choice moves the late-stage metrics by 10–30 %. Both branches are kept in
+this repository (`repro_params.m`, `make_fig_sensitivity.m`) so the sensitivity is
+explicit rather than hidden in a single number.
 
 ---
 
-## 6. Defects found in the released material
+## 6. Notes for anyone reusing the released code
 
-1. **`Code.m`: `phi0_global = 0.10` cannot be the production value** — with it the
-   bubbles dissolve (§3).
+None of these affects the conclusions; they are listed so that the next user does
+not have to rediscover them.
+
+1. **The shipped `phi0_global = 0.10` does not reproduce the published initial
+   state.** It gives r_eff,₀ = 3.297 against 5.9494, and the seeds do not survive
+   (§3). Set the composition explicitly when running the code.
 2. **`Code.m` runs 18 simulations of which 9 are distinct.** `NO_STRESS` is
-   repeated once per stress scenario and the zero-stress `RESIDUAL_BIAX` case is
-   bit-identical to `NO_STRESS`. Wasted compute: 2×.
-3. **Figs. 1/6/8 mix two different runs** (mean η 0.107 at t = 0 versus 0.446 at
-   t > 0), i.e. the initial panel is not the state the simulation started from.
+   rebuilt once per stress scenario and the zero-stress `RESIDUAL_BIAX` case is
+   bit-identical to it, so half the campaign is duplicated.
+3. **The t = 0 panels of Figs. 1, 6 and 8 have a different mean composition from
+   the later panels** (0.1069 versus 0.4437–0.4510). Because the update conserves
+   the mean, these panels appear to come from two different set-ups.
 4. **`make_initial_eta_CH_uniform.m` can hang.** `min_spacing = 5.5·seedradius`
-   combined with an unbounded `while k < numseeds` loop spins forever once 300
-   seeds can no longer be packed into a 512² box (seed radius ≳ 5). It should
-   raise an error instead.
-5. **`Fig. 9 (b).xlsx` has its columns swapped** relative to its header
-   (`Msigma, Tem (K)` but the values are 800, 1.95419 …).
-6. The double mean-conservation (`η̂(1,1) = η̂ⁿ(1,1)` *and* the renormalisation
+   with an unbounded `while k < numseeds` loop never terminates once 300 seeds can
+   no longer be packed into a 512² box (seed radius ≳ 5). A guard would be safer.
+5. **`Fig. 9 (b).xlsx` has its columns in the order `Tem, Msigma`** although the
+   header reads `Msigma, Tem (K)`.
+6. The double mean conservation (`η̂(1,1) = η̂ⁿ(1,1)` *and* the renormalisation
    step) is redundant, though harmless.
-7. `Code.m` carries a large amount of dead plotting code (unused live-stress
-   arrays, red RGB placeholders) that obscures the numerics.
+7. `Code.m` carries a fair amount of unused plotting code that obscures the
+   numerics on a first read.
 
 ---
 
