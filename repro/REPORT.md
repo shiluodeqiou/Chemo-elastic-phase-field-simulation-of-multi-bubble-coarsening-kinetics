@@ -74,7 +74,7 @@ edit in the working tree is a warning identifier in the GPU-fallback branch
 
 ---
 
-## 3. The initial condition: the one substantive change
+## 3. The initial condition: the one calibrated choice
 
 `Code.m` ships `phi0_global = 0.10` with 300 Gaussian seeds (radius 2.5, noise
 0.005). **Run as shipped, the simulation produces no bubbles at all.** The double
